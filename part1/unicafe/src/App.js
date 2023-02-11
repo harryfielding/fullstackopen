@@ -9,7 +9,7 @@ const App = () => {
   console.log("app rerendered")
   console.log("good: ", good, ", neutral: ", neutral, ", bad: ", bad)
 
-  //create an array containing objects for each state and its state change function to pass into the Feedback component
+  //create an array containing objects for each state and its state change function to pass into the Feedback and Statistics components (I have now realised this makes the code a lot less readable but I'm too far in now)
   const states = [{state: good, stateChange: setGood}, 
                   {state: neutral, stateChange: setNeutral}, 
                   {state: bad, stateChange: setBad}]
@@ -66,13 +66,21 @@ const Statistics = ({ states }) => {
   return (
     <div>
       <h1>statistics</h1>
-      <p>good: {states[0].state}</p>
-      <p>neutral: {states[1].state}</p>
-      <p>bad: {states[2].state}</p>
-      <p>all: {all}</p>
-      <p>average: {getAverage()}</p>
-      <p>positive: {getPositive()}%</p>
+      <StatisticLine label="good" value={states[0].state} />
+      <StatisticLine label="neutral" value={states[1].state} />
+      <StatisticLine label="bad" value={states[2].state} />
+      <StatisticLine label="all" value={all} />
+      <StatisticLine label="average" value={getAverage()} />
+      <StatisticLine label="positive" value={getPositive()} percent={true} />
     </div>
+  )
+}
+
+const StatisticLine = ({ label, value, percent }) => {
+  return (
+    <>
+      <p>{label}: {value}{percent ? '%' : null}</p>
+    </>
   )
 }
 
