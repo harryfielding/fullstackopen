@@ -14,11 +14,27 @@ const App = () => {
    
   const [selected, setSelected] = useState(0)
 
+  const randInt = (max) => Math.floor(Math.random() * max)
+
+  const next = () => setSelected(randInt(anecdotes.length))
+
+  console.log("anecdote: ", anecdotes[selected], ", selected: ", selected);
+
   return (
     <div>
       {anecdotes[selected]}
+      <br />
+      <Button label="next anecdote" onClick={next} />
     </div>
   )
+}
+
+const Button = ({ label, onClick }) => {
+  return (
+    <>
+      <button onClick={onClick}>{label}</button>
+    </>
+  )  
 }
 
 export default App
