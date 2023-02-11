@@ -7,9 +7,7 @@ const App = () => {
   const [bad, setBad] = useState(0)
 
   console.log("app rerendered")
-  console.log("good: ", good)
-  console.log("neutral: ", neutral)
-  console.log("bad: ", bad)
+  console.log("good: ", good, ", neutral: ", neutral, ", bad: ", bad)
 
   //create an array containing objects for each state and its state change function to pass into the Feedback component
   const states = [{state: good, stateChange: setGood}, 
@@ -50,13 +48,18 @@ const Button = ({ label, onClick }) => {
 }
 
 const Statistics = ({ states }) => {
+  const all = states[0].state + states[1].state + states[2].state
+
+  const getAverage = () => (states[0].state-states[2].state)/all
+
   return (
     <div>
       <h1>statistics</h1>
       <p>good: {states[0].state}</p>
       <p>neutral: {states[1].state}</p>
       <p>bad: {states[2].state}</p>
-      <p>all: {states[0].state + states[1].state + states[2].state}</p>
+      <p>all: {all}</p>
+      <p>average: {getAverage()}</p>
     </div>
   )
 }
