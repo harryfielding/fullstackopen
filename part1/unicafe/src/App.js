@@ -54,6 +54,15 @@ const Statistics = ({ states }) => {
 
   const getPositive = () => [states[0].state/all]*100
 
+  if (all === 0) {
+    return (
+      <div>
+        <h1>statistics</h1>
+        <p>No feedback given</p>
+      </div>
+    )
+  }
+
   return (
     <div>
       <h1>statistics</h1>
