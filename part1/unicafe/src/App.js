@@ -11,26 +11,31 @@ const App = () => {
   console.log("neutral: ", neutral)
   console.log("bad: ", bad)
 
+  //create an array containing objects for each state and its state change function to pass into the Feedback component
+  const states = [{state: good, stateChange: setGood}, 
+                  {state: neutral, stateChange: setNeutral}, 
+                  {state: bad, stateChange: setBad}]
+
   return (
     <div>
-      <Feedback good={good} setGood={setGood} 
-                neutral={neutral} setNeutral={setNeutral}
-                bad={bad} setBad={setBad} />
+      <Feedback states={states} />
     </div>
   )
 }
 
-const Feedback = (props) => {
-  const clickGood = () => props.setGood(props.good+1)
-  const clickNeutral = () => props.setNeutral(props.neutral+1)
-  const clickBad = () => props.setBad(props.bad+1)
+const Feedback = ({ states }) => {
+  //function that returns function that will be run on each button click
+  const handleClick = (state, stateChange) => {
+    const eventHandler = () => stateChange(state+1)
+    return eventHandler
+  }
 
   return (
     <div>
       <h1>give feedback</h1>
-      <Button label="good" onClick={clickGood} />
-      <Button label="neutral" onClick={clickNeutral} />
-      <Button label="bad" onClick={clickBad} />
+      <Button label="good" onClick={handleClick(states[0].state, states[0].stateChange)} />
+      <Button label="neutral" onClick={handleClick(states[1].state, states[1].stateChange)} />
+      <Button label="bad" onClick={handleClick(states[2].state, states[2].stateChange)} />
     </div>
   )
 }
