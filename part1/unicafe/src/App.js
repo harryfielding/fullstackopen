@@ -19,6 +19,7 @@ const App = () => {
   return (
     <div>
       <Feedback states={states} />
+      <Statistics states={states} />
     </div>
   )
 }
@@ -47,4 +48,16 @@ const Button = ({ label, onClick }) => {
     </>
   )
 }
+
+const Statistics = ({ states }) => {
+  return (
+    <div>
+      <h1>statistics</h1>
+      <p>good: {states[0].state}</p>
+      <p>neutral: {states[1].state}</p>
+      <p>bad: {states[2].state}</p>
+    </div>
+  )
+}
+
 export default App
