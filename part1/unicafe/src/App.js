@@ -56,6 +56,7 @@ const Statistics = ({ states }) => {
       <p>good: {states[0].state}</p>
       <p>neutral: {states[1].state}</p>
       <p>bad: {states[2].state}</p>
+      <p>all: {states[0].state + states[1].state + states[2].state}</p>
     </div>
   )
 }
