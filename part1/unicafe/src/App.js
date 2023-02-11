@@ -52,6 +52,8 @@ const Statistics = ({ states }) => {
 
   const getAverage = () => (states[0].state-states[2].state)/all
 
+  const getPositive = () => [states[0].state/all]*100
+
   return (
     <div>
       <h1>statistics</h1>
@@ -60,6 +62,7 @@ const Statistics = ({ states }) => {
       <p>bad: {states[2].state}</p>
       <p>all: {all}</p>
       <p>average: {getAverage()}</p>
+      <p>positive: {getPositive()}%</p>
     </div>
   )
 }
