@@ -66,12 +66,16 @@ const Statistics = ({ states }) => {
   return (
     <div>
       <h1>statistics</h1>
-      <StatisticLine label="good" value={states[0].state} />
-      <StatisticLine label="neutral" value={states[1].state} />
-      <StatisticLine label="bad" value={states[2].state} />
-      <StatisticLine label="all" value={all} />
-      <StatisticLine label="average" value={getAverage()} />
-      <StatisticLine label="positive" value={getPositive()} percent={true} />
+      <table>
+        <tbody>
+          <StatisticLine label="good" value={states[0].state} />
+          <StatisticLine label="neutral" value={states[1].state} />
+          <StatisticLine label="bad" value={states[2].state} />
+          <StatisticLine label="all" value={all} />
+          <StatisticLine label="average" value={getAverage()} />
+          <StatisticLine label="positive" value={getPositive()} percent={true} />
+        </tbody>
+      </table>
     </div>
   )
 }
@@ -79,7 +83,10 @@ const Statistics = ({ states }) => {
 const StatisticLine = ({ label, value, percent }) => {
   return (
     <>
-      <p>{label}: {value}{percent ? '%' : null}</p>
+      <tr>
+        <th scope="row">{label}</th>
+        <td>{value}{percent ? '%' : null}</td>
+      </tr>
     </>
   )
 }
