@@ -2,16 +2,20 @@ import { useState } from 'react'
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
+    { name: 'Arto Hellas',
+      number: '1234567890' }
   ]) 
   const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
 
 const nameChanged = (event) => setNewName(event.target.value)
+const numberChanged = (event) => setNewNumber(event.target.value)
 
-const addName = (event) => {
+const addPerson = (event) => {
   event.preventDefault()
   const personObject = {
-    name: newName
+    name: newName,
+    number: newNumber
   }
   if (persons.some((a) => a.name === personObject.name)) {
     alert(`${newName} is already in the phonebook`)
@@ -23,9 +27,12 @@ const addName = (event) => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addName}>
+      <form onSubmit={addPerson}>
         <div>
           name: <input onChange={nameChanged} />
+        </div>
+        <div>
+          number: <input onChange={numberChanged}/>
         </div>
         <div>
           <button type="submit">add</button>
@@ -34,7 +41,7 @@ const addName = (event) => {
       <table>
         <thead><tr><th><h2>Numbers</h2></th></tr></thead>
         <tbody>
-          {persons.map((person) => <tr key={person.name}><th>{person.name}</th></tr>)}
+          {persons.map((person) => <tr key={person.name}><th>{person.name}</th><td>{person.number}</td></tr>)}
         </tbody>
       </table>
     </div>
