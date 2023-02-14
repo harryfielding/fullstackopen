@@ -28,6 +28,7 @@ const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPerson
       .create(personObject)
       .then(response => {
         console.log("POST promise fulfilled")
+        personObject.id = response.data.id
         setPersons(persons.concat(personObject))
         setNewName('')
         setNewNumber('')
@@ -52,17 +53,35 @@ const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPerson
   )
 }
 
-const Person = ({ person }) => <tr><th>{person.name}</th><td>{person.number}</td></tr>
-
-const Table = ({ persons, filter }) => {
-  const filteredPersons = filter === '' ? persons : persons.filter((a) => a.name.toLowerCase().includes(filter.toLowerCase()))
+const Person = ({ person, setPersons, persons }) => {
   
+  const deletePerson = (id) => {
+    return () => {
+      if (window.confirm(`Are you sure you would like to delete ${person.name}?`)) {
+        phonebookService
+        .del(id)
+        .then(response => {
+          console.log("DELETE request fulfilled")
+          setPersons(persons.filter(person => person.id !== id))
+        })
+      }
+    }
+  }
+
+  return (
+    <tr><th>{person.name}</th><td>{person.number}</td><td><button onClick={deletePerson(person.id)}>delete</button></td></tr>
+  )
+}
+
+const Table = ({ persons, setPersons, filter }) => {
+  const filteredPersons = filter === '' ? persons : persons.filter((a) => a.name.toLowerCase().includes(filter.toLowerCase()))
+
   return (
     <div>
       <table>
         <thead><tr><th><h2>Numbers</h2></th></tr></thead>
         <tbody>
-          {filteredPersons.map((person) => <Person key={person.id} person={person} />)}
+          {filteredPersons.map((person) => <Person key={person.id} person={person} persons={persons} setPersons={setPersons} />)}
         </tbody>
       </table>
     </div>
@@ -92,7 +111,7 @@ const App = () => {
       <Form newName={newName} setNewName={setNewName}
             newNumber={newNumber} setNewNumber={setNewNumber}
             persons={persons} setPersons={setPersons} />
-      <Table persons={persons} filter={filter} />
+      <Table persons={persons} setPersons={setPersons} filter={filter} />
     </div>
   )
 }
