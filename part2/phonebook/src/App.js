@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import phonebookService from './services/persons.js'
 
 const Filter = ({ setFilter }) => {
   const filterChanged = (event) => setFilter(event.target.value)
@@ -24,8 +24,8 @@ const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPerson
     if (persons.some((a) => a.name === personObject.name)) {
       alert(`${newName} is already in the phonebook`)
     } else {
-      axios
-      .post("http://localhost:3001/persons", personObject)
+      phonebookService
+      .create(personObject)
       .then(response => {
         console.log("POST promise fulfilled")
         setPersons(persons.concat(personObject))
@@ -76,8 +76,8 @@ const App = () => {
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    axios
-    .get("http://localhost:3001/persons")
+    phonebookService
+    .get()
     .then(response => {
       console.log("GET promise fulfilled")
       setPersons(response.data)
