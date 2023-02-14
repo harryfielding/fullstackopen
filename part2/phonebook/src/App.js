@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import phonebookService from './services/persons.js'
+import './index.css'
 
 const Filter = ({ setFilter }) => {
   const filterChanged = (event) => setFilter(event.target.value)
@@ -11,7 +12,7 @@ const Filter = ({ setFilter }) => {
   )
 }
 
-const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPersons }) => {
+const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPersons, setNotificationMessage }) => {
   const nameChanged = (event) => setNewName(event.target.value)
   const numberChanged = (event) => setNewNumber(event.target.value)
 
@@ -27,6 +28,7 @@ const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPerson
         .edit(persons.filter(person => person.name === personObject.name)[0].id, personObject)
         .then(response => {
           console.log("PUT request fulfilled")
+          setNotificationMessage(`Edited ${response.data.name}'s phone number to ${newNumber}`)
           setPersons(persons.map(person => person.name === response.data.name ? response.data : person))
         })
       }
@@ -36,6 +38,7 @@ const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPerson
       .then(response => {
         console.log("POST promise fulfilled")
         personObject.id = response.data.id
+        setNotificationMessage(`Added ${response.data.name}`)
         setPersons(persons.concat(personObject))
       })
     }
@@ -58,7 +61,7 @@ const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPerson
   )
 }
 
-const Person = ({ person, setPersons, persons }) => {
+const Person = ({ person, setPersons, persons, setNotificationMessage }) => {
   
   const deletePerson = (id) => {
     return () => {
@@ -67,6 +70,7 @@ const Person = ({ person, setPersons, persons }) => {
         .del(id)
         .then(response => {
           console.log("DELETE request fulfilled")
+          setNotificationMessage(`Deleted ${person.name}`)
           setPersons(persons.filter(person => person.id !== id))
         })
       }
@@ -78,7 +82,7 @@ const Person = ({ person, setPersons, persons }) => {
   )
 }
 
-const Table = ({ persons, setPersons, filter }) => {
+const Table = ({ persons, setPersons, filter, setNotificationMessage }) => {
   const filteredPersons = filter === '' ? persons : persons.filter((a) => a.name.toLowerCase().includes(filter.toLowerCase()))
 
   return (
@@ -86,10 +90,20 @@ const Table = ({ persons, setPersons, filter }) => {
       <table>
         <thead><tr><th><h2>Numbers</h2></th></tr></thead>
         <tbody>
-          {filteredPersons.map((person) => <Person key={person.id} person={person} persons={persons} setPersons={setPersons} />)}
+          {filteredPersons.map((person) => <Person key={person.id} person={person} persons={persons} setPersons={setPersons} setNotificationMessage={setNotificationMessage} />)}
         </tbody>
       </table>
     </div>
+  )
+}
+
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className='notification'>{message}</div>
   )
 }
 
@@ -98,6 +112,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState(null)
 
   useEffect(() => {
     phonebookService
@@ -108,15 +123,20 @@ const App = () => {
     })
   }, [])
 
+  useEffect(() => {
+    setTimeout(() => setNotificationMessage(null), 3000)
+  }, [notificationMessage])
+
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage} />
       <Filter setFilter={setFilter} />
       <h2>Add new</h2>
       <Form newName={newName} setNewName={setNewName}
             newNumber={newNumber} setNewNumber={setNewNumber}
-            persons={persons} setPersons={setPersons} />
-      <Table persons={persons} setPersons={setPersons} filter={filter} />
+            persons={persons} setPersons={setPersons} setNotificationMessage={setNotificationMessage} />
+      <Table persons={persons} setPersons={setPersons} filter={filter} setNotificationMessage={setNotificationMessage} />
     </div>
   )
 }
