@@ -24,7 +24,14 @@ const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPerson
     if (persons.some((a) => a.name === personObject.name)) {
       alert(`${newName} is already in the phonebook`)
     } else {
-      setPersons(persons.concat(personObject))
+      axios
+      .post("http://localhost:3001/persons", personObject)
+      .then(response => {
+        console.log("POST promise fulfilled")
+        setPersons(persons.concat(personObject))
+        setNewName('')
+        setNewNumber('')
+      })
     }
   }
 
@@ -55,7 +62,7 @@ const Table = ({ persons, filter }) => {
       <table>
         <thead><tr><th><h2>Numbers</h2></th></tr></thead>
         <tbody>
-          {filteredPersons.map((person) => <Person key={person.name} person={person} />)}
+          {filteredPersons.map((person) => <Person key={person.id} person={person} />)}
         </tbody>
       </table>
     </div>
@@ -71,8 +78,8 @@ const App = () => {
   useEffect(() => {
     axios
     .get("http://localhost:3001/persons")
-    .then((response) => {
-      console.log("promise fulfilled")
+    .then(response => {
+      console.log("GET promise fulfilled")
       setPersons(response.data)
     })
   }, [])
