@@ -22,7 +22,14 @@ const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPerson
       number: newNumber
     }
     if (persons.some((a) => a.name === personObject.name)) {
-      alert(`${newName} is already in the phonebook`)
+      if (window.confirm(`${newName} is already in the phonebook, would you like to update their number?`)) {
+        phonebookService
+        .edit(persons.filter(person => person.name === personObject.name)[0].id, personObject)
+        .then(response => {
+          console.log("PUT request fulfilled")
+          setPersons(persons.map(person => person.name === response.data.name ? response.data : person))
+        })
+      }
     } else {
       phonebookService
       .create(personObject)
@@ -30,8 +37,6 @@ const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPerson
         console.log("POST promise fulfilled")
         personObject.id = response.data.id
         setPersons(persons.concat(personObject))
-        setNewName('')
-        setNewNumber('')
       })
     }
   }
