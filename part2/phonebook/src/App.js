@@ -12,7 +12,7 @@ const Filter = ({ setFilter }) => {
   )
 }
 
-const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPersons, setNotificationMessage }) => {
+const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPersons, setNotificationMessage, setErrorMessage }) => {
   const nameChanged = (event) => setNewName(event.target.value)
   const numberChanged = (event) => setNewNumber(event.target.value)
 
@@ -30,6 +30,9 @@ const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPerson
           console.log("PUT request fulfilled")
           setNotificationMessage(`Edited ${response.data.name}'s phone number to ${newNumber}`)
           setPersons(persons.map(person => person.name === response.data.name ? response.data : person))
+        })
+        .catch(response => {
+          setErrorMessage(`Information of ${personObject.name} has already been deleted from the server`)
         })
       }
     } else {
@@ -107,12 +110,23 @@ const Notification = ({ message }) => {
   )
 }
 
+const Error = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className='error'>{message}</div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
   const [notificationMessage, setNotificationMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     phonebookService
@@ -127,15 +141,22 @@ const App = () => {
     setTimeout(() => setNotificationMessage(null), 3000)
   }, [notificationMessage])
 
+  useEffect(() => {
+    setTimeout(() => setErrorMessage(null), 3000)
+  }, [errorMessage])
+
   return (
     <div>
       <h2>Phonebook</h2>
+      <Error message={errorMessage} />
       <Notification message={notificationMessage} />
       <Filter setFilter={setFilter} />
       <h2>Add new</h2>
       <Form newName={newName} setNewName={setNewName}
             newNumber={newNumber} setNewNumber={setNewNumber}
-            persons={persons} setPersons={setPersons} setNotificationMessage={setNotificationMessage} />
+            persons={persons} setPersons={setPersons} 
+            setNotificationMessage={setNotificationMessage} 
+            setErrorMessage={setErrorMessage} />
       <Table persons={persons} setPersons={setPersons} filter={filter} setNotificationMessage={setNotificationMessage} />
     </div>
   )
