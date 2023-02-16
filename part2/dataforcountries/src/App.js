@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const Country = ({ countries }) => {
-  if (countries.length > 10) {
-    return <div>Too many matches; specify another filter</div>
-  } else if (countries.length > 1) {
-    return <div>{countries.map(country => <p key={country.name.common}>{country.name.common} <br /></p>)}</div>
-  } else if (countries.length === 1) {
+const Country = ({ countries, filter, setFilter }) => {
+  const showCountry = (country) => {
+    return () => {
+      setFilter(country)
+    }
+  }
+
+  if (countries.filter(country => country.name.common === filter).length === 1) {
     return (
       <div>
         <h1>{countries[0].name.common}</h1>
@@ -16,12 +18,17 @@ const Country = ({ countries }) => {
         </ul>
         <h2>Languages:</h2>
         <ul>
-          {Object.keys(countries[0].languages).map(key => <li key={countries[0].languages[key]}>{countries[0].languages[key]}</li>)}
+          {Object.values(countries[0].languages).map(value => <li key={value}>{value}</li>)}
         </ul>
+        <h2>Flag:</h2>
         <img src={countries[0].flags.png} alt={countries[0].flags.alt} />
       </div>
     )
-  }
+  } else if (countries.length > 10) {
+    return <div>Too many matches; specify another filter</div>
+  } else if (countries.length > 1) {
+    return <div>{countries.map(country => <p key={country.name.common}>{country.name.common} <button onClick={showCountry(country.name.common)}>show</button></p>)}</div>
+  } 
 }
 
 const App = () => {
@@ -41,7 +48,7 @@ const App = () => {
   return (
     <div>
       search: <input onChange={filterChanged} />
-      <Country countries={countries} />
+      <Country countries={countries} setFilter={setFilter} filter={filter}/>
     </div>
   );
 }
