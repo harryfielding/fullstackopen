@@ -24,6 +24,8 @@ let phonebook = [
   }
 ]
 
+app.use(express.json())
+
 app.get('/api/persons', (req, res) => {
   res.json(phonebook)
 })
@@ -42,6 +44,35 @@ app.delete('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id)
   phonebook = phonebook.filter(person => person.id !== id)
   res.status(204).end()
+})
+
+app.post('/api/persons', (req, res) => {
+  if (!req.body.name) {
+    return res.status(400).json({
+      error: "Name missing"
+    })
+  }
+
+  if (!req.body.number) {
+    return res.status(400).json({
+      error: "Number missing"
+    })
+  }
+
+  if (phonebook.find(person => person.name === req.body.name)) {
+    return res.status(400).json({
+      error: "Name already taken"
+    })
+  }
+
+  const person = {
+    id: Math.round(Math.random() * 1000000000),
+    name: req.body.name,
+    number: req.body.number
+  }
+
+  phonebook = phonebook.concat(person)
+  res.send(person)
 })
 
 app.get('/info', (req, res) => {
