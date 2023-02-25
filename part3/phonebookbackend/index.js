@@ -26,7 +26,14 @@ let phonebook = [
 ]
 
 app.use(express.json())
-app.use(morgan('tiny'))
+
+morgan.token('body', (req, res) => {
+  if (req.method === 'POST') {
+    return JSON.stringify(req.body)
+  }
+  return null
+})
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 app.get('/api/persons', (req, res) => {
   res.json(phonebook)
