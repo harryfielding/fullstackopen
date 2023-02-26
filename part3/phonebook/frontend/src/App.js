@@ -31,8 +31,30 @@ const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPerson
           setNotificationMessage(`Edited ${response.data.name}'s phone number to ${newNumber}`)
           setPersons(persons.map(person => person.name === response.data.name ? response.data : person))
         })
-        .catch(response => {
-          setErrorArray([`Information of ${personObject.name} has already been deleted from the server`])
+        .catch(error => {
+          console.log(error.response.data.message)
+
+          let errorArray = []
+  
+          try {
+            if (error.response.data.errors.name.kind === 'minlength') {
+              errorArray[errorArray.length] = "Name must be at least 3 characters"
+            }
+          } catch {}
+  
+          try {
+            if (error.response.data.errors.number.kind === 'minlength') {
+              errorArray[errorArray.length] = "Number must be at least 8 characters"
+            } else if (error.response.data.errors.number.kind === 'user defined') {
+              errorArray[errorArray.length] = "Number formatted incorrectly"
+            }
+          } catch {}
+  
+          if (errorArray.length === 0) {
+            errorArray[0] = `Information of ${personObject.name} has already been deleted from the server`
+          }
+  
+          setErrorArray(errorArray)
         })
       }
     } else {
@@ -63,7 +85,7 @@ const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPerson
           }
         } catch {}
 
-        if (Object.keys(errorArray).length === 0) {
+        if (errorArray.length === 0) {
           errorArray[errorArray.length] = error.response.data.message
         }
 
