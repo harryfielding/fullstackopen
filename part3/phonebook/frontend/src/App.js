@@ -12,7 +12,7 @@ const Filter = ({ setFilter }) => {
   )
 }
 
-const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPersons, setNotificationMessage, setErrorMessage }) => {
+const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPersons, setNotificationMessage, setErrorArray }) => {
   const nameChanged = (event) => setNewName(event.target.value)
   const numberChanged = (event) => setNewNumber(event.target.value)
 
@@ -32,7 +32,7 @@ const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPerson
           setPersons(persons.map(person => person.name === response.data.name ? response.data : person))
         })
         .catch(response => {
-          setErrorMessage(`Information of ${personObject.name} has already been deleted from the server`)
+          setErrorArray([`Information of ${personObject.name} has already been deleted from the server`])
         })
       }
     } else {
@@ -43,6 +43,31 @@ const Form = ({ newName, setNewName, newNumber, setNewNumber, persons, setPerson
         personObject.id = response.data.id
         setNotificationMessage(`Added ${response.data.name}`)
         setPersons(persons.concat(personObject))
+      })
+      .catch(error => {
+        console.log(error.response.data.message)
+
+        let errorArray = []
+
+        try {
+          if (error.response.data.errors.name.kind === 'minlength') {
+            errorArray[errorArray.length] = "Name must be at least 3 characters"
+          }
+        } catch {}
+
+        try {
+          if (error.response.data.errors.number.kind === 'minlength') {
+            errorArray[errorArray.length] = "Number must be at least 8 characters"
+          } else if (error.response.data.errors.number.kind === 'user defined') {
+            errorArray[errorArray.length] = "Number formatted incorrectly"
+          }
+        } catch {}
+
+        if (Object.keys(errorArray).length === 0) {
+          errorArray[errorArray.length] = error.response.data.message
+        }
+
+        setErrorArray(errorArray)
       })
     }
   }
@@ -110,13 +135,13 @@ const Notification = ({ message }) => {
   )
 }
 
-const Error = ({ message }) => {
-  if (message === null) {
+const Error = ({ errorArray }) => {
+  if (errorArray === null) {
     return null
   }
 
   return (
-    <div className='error'>{message}</div>
+    <div className='error'><ul>{errorArray.map(error => <li key={error}>{error}</li>)}</ul></div>
   )
 }
 
@@ -126,7 +151,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
   const [notificationMessage, setNotificationMessage] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [errorArray, setErrorArray] = useState(null)
 
   useEffect(() => {
     phonebookService
@@ -142,13 +167,13 @@ const App = () => {
   }, [notificationMessage])
 
   useEffect(() => {
-    setTimeout(() => setErrorMessage(null), 3000)
-  }, [errorMessage])
+    setTimeout(() => setErrorArray(null), 3000)
+  }, [errorArray])
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <Error message={errorMessage} />
+      <Error errorArray={errorArray} />
       <Notification message={notificationMessage} />
       <Filter setFilter={setFilter} />
       <h2>Add new</h2>
@@ -156,7 +181,7 @@ const App = () => {
             newNumber={newNumber} setNewNumber={setNewNumber}
             persons={persons} setPersons={setPersons} 
             setNotificationMessage={setNotificationMessage} 
-            setErrorMessage={setErrorMessage} />
+            setErrorArray={setErrorArray} />
       <Table persons={persons} setPersons={setPersons} filter={filter} setNotificationMessage={setNotificationMessage} />
     </div>
   )
