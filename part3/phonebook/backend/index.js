@@ -28,9 +28,9 @@ let phonebook = [
   }
 ]
 
+app.use(express.static('build'))
 app.use(express.json())
 app.use(cors())
-app.use(express.static('build'))
 
 morgan.token('body', (req, res) => {
   if (req.method === 'POST') {
@@ -99,3 +99,15 @@ const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
+
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return res.status(400).send({error: 'malformed id'})
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
