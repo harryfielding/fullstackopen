@@ -1,6 +1,8 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./modules/Person')
 const app = express()
 
 let phonebook = [
@@ -39,17 +41,15 @@ morgan.token('body', (req, res) => {
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 app.get('/api/persons', (req, res) => {
-  res.json(phonebook)
+  Person.find({}).then(persons => {
+    res.json(persons)
+  })
 })
 
 app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const person = phonebook.find(person => person.id === id)
-  if (person) {
+  Person.findById(req.params.id).then(person => {
     res.json(person)
-  } else {
-    res.status(404).end()
-  }
+  })
 })
 
 app.delete('/api/persons/:id', (req, res) => {
@@ -77,14 +77,14 @@ app.post('/api/persons', (req, res) => {
     })
   }
 
-  const person = {
-    id: Math.round(Math.random() * 1000000000),
+  const person = new Person({
     name: req.body.name,
     number: req.body.number
-  }
+  })
 
-  phonebook = phonebook.concat(person)
-  res.send(person)
+  person.save().then(savedPerson => {
+    res.json(savedPerson)
+  })
 })
 
 app.get('/info', (req, res) => {
@@ -93,7 +93,7 @@ app.get('/info', (req, res) => {
             <p>Time: ${date.toUTCString()}</p>`)
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
