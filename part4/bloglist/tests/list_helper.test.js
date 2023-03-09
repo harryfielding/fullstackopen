@@ -50,3 +50,49 @@ describe('total likes', () => {
 		expect(result).toBe(2000100)
 	})
 })
+
+describe('favourite blog', () => {
+	test('of empty list is null', () => {
+		const blogs = []
+
+		const result = listHelper.favouriteBlog(blogs)
+		expect(result).toEqual(null)
+	})
+
+	test('of 1-length list is the only blog', () => {
+		const blogs = [
+			{
+				title: 'test blog',
+				author: 'test person',
+				url: 'https://example.com/blog',
+				likes: 100,
+				id: '6401346e559b148826fba1a2'
+			}
+		]
+
+		const result = listHelper.favouriteBlog(blogs)
+		expect(result).toEqual(blogs[0])
+	})
+
+	test('of bigger list is calculated correctly', () => {
+		const blogs = [
+			{
+				title: 'test blog',
+				author: 'test person',
+				url: 'https://example.com/blog',
+				likes: 100,
+				id: '6401346e559b148826fba1a2'
+			},
+			{
+				title: 'test blog 2',
+				author: 'test person 2',
+				url: 'https://example.com/blog2',
+				likes: 2000000,
+				id: '6408d809172af41d0bc50df3'
+			}
+		]
+
+		const result = listHelper.favouriteBlog(blogs)
+		expect(result).toEqual(blogs[1])
+	})
+})
