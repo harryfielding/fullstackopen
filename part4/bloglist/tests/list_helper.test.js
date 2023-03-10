@@ -153,3 +153,60 @@ describe('most blogs', () => {
 		})
 	})
 })
+
+describe('most likes', () => {
+	test('of empty list is null', () => {
+		const blogs = []
+
+		const result = listHelper.mostLikes(blogs)
+		expect(result).toEqual(null)
+	})
+	test('of 1-length list is the only author and has correct number of likes', () => {
+		const blogs = [
+			{
+				title: 'test blog',
+				author: 'test person',
+				url: 'https://example.com/blog',
+				likes: 100,
+				id: '6401346e559b148826fba1a2'
+			}
+		]
+
+		const result = listHelper.mostLikes(blogs)
+		expect(result).toEqual({
+			author: 'test person',
+			likes: 100
+		})
+	})
+	test('of bigger list is calculated correctly', () => {
+		const blogs = [
+			{
+				title: 'test blog',
+				author: 'test person',
+				url: 'https://example.com/blog',
+				likes: 100,
+				id: '6401346e559b148826fba1a2'
+			},
+			{
+				title: 'test blog 2',
+				author: 'test person 2',
+				url: 'https://example.com/blog2',
+				likes: 2000000,
+				id: '6408d809172af41d0bc50df3'
+			},
+			{
+				title: 'test blog 2 2: the sequel',
+				author: 'test person 2',
+				url: 'https://example.com/blog2sequel',
+				likes: 2,
+				id: '640b4afbfc92573d81716142'
+			}
+		]
+
+		const result = listHelper.mostLikes(blogs)
+		expect(result).toEqual({
+			author: 'test person 2',
+			likes: 2000002
+		})
+	})
+})
